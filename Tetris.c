@@ -82,6 +82,25 @@ void deleteBlock(char blockInfo[4][4])
 	}
 }
 
+// 블록을 왼쪽으로 움직임
+// 기호는 문자 2칸 차지 +-2
+void ShiftLeft()
+{
+	deleteBlock(blockModel[block_id]);
+	curPosX -= 2;
+	SetCurrentCursorPos(curPosX, curPosY);
+	showBlock(blockModel[block_id]);
+}
+
+// 블록을 오른쪽으로 움직임
+void ShiftRight()
+{
+	deleteBlock(blockModel[block_id]);
+	curPosX += 2;
+	SetCurrentCursorPos(curPosX, curPosY);
+	showBlock(blockModel[block_id]);
+}
+
 // 게임보드
 int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
 
@@ -133,6 +152,32 @@ void drawBoard()
 			printf("┘");
 		else
 			printf("│");
+	}
+}
+
+// 키 입력을 받음
+void ProcessKeyInput()
+{
+
+	for (int i = 0; i < 20; i++)
+	{
+		int key;
+		if (_kbhit() != 0)
+		{
+			key = _getch();
+
+			switch (key)
+			{
+			case LEFT:
+				ShiftLeft();
+				break;
+			case RIGHT:
+				ShiftRight();
+				break;
+			}
+		}	
+
+		Sleep(1000);
 	}
 }
 
