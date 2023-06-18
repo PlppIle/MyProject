@@ -14,6 +14,7 @@
 
 int curPosX, curPosY;	// 현재 커서 위치 저장 변수
 int block_id;			// 내려올 블록의 id
+int speed = 1;			// block 속도 조정
 
 /* 키보드 키값 정의 */
 #define LEFT 75
@@ -248,7 +249,7 @@ void ProcessKeyInput()
 			}
 		}	
 
-		Sleep(1000);
+		Sleep(speed);
 	}
 }
 
