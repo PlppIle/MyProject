@@ -322,6 +322,15 @@ void ProcessKeyInput()
 	}
 }
 
+// 블록이 일정 수준 이상으로 올라오면 게임 종료
+int IsGameOver()
+{
+	if (!DetectCollision(curPosX, curPosY, blockModel[block_id]))
+		return 1;
+
+	return 0;
+}
+
 // 현재 점수를 보여주는 인터페이스
 void showScore()
 {
@@ -343,6 +352,13 @@ int main()
 			curPosY = GBOARD_ORIGIN_Y;
 
 			drawBoard();
+
+			if (IsGameOver())
+			{
+				SetCurrentCursorPos(8, 1);
+				printf("Game Over!!");
+				break;
+			}
 
 			while(1)
 			{
