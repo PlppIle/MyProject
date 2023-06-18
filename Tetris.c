@@ -48,6 +48,14 @@ COORD GetCurrentCursorPos()
 	return curPoint;
 }
 
+void RemoveCursor()
+{
+	CONSOLE_CURSOR_INFO curInfo;
+	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
+	curInfo.bVisible = 0;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
+}
+
 // 블록을 그림
 void showBlock(char blockInfo[4][4])
 {
@@ -343,6 +351,8 @@ void showScore()
 int main()
 {
 	srand(time(NULL));
+
+	RemoveCursor();
 
 	while (1)
 		{
