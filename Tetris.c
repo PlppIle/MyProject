@@ -17,6 +17,7 @@ int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
 
 int curPosX, curPosY;	// 현재 커서 위치 저장 변수
 int block_id;			// 내려올 블록의 id
+int speed = 1;			// block 속도 조정
 
 /* 키보드 키값 정의 */
 #define LEFT 75
@@ -212,6 +213,30 @@ void RemoveFillUpLine()
 	RedrawBlocks();
 }
 
+// 블록 회전
+int RotateBlock()
+{
+	int block_base = block_id / 4;
+	int block_rotated = (block_base * 4) + ((block_id + 1) % 4);
+
+	// 방향 전환 시 블록과 충돌의 경우
+	if (!DetectCollision(curPosX, curPosY, blockModel[block_rotated]))
+		return 0;
+
+	deleteBlock(blockModel[block_id]);
+	block_id = (block_base * 4) + ((block_id + 1) % 4);
+	SetCurrentCursorPos(curPosX, curPosY);
+	showBlock(blockModel[block_id]);
+
+	return 1;
+}
+
+// 스페이스를 누르면 바로 밑으로 내려옴
+void SpaceDown()
+{
+	while (BlockDown());
+}
+
 // 시작 시 게임보드 초기화
 void gameBoardinit()
 {
@@ -282,10 +307,16 @@ void ProcessKeyInput()
 			case RIGHT:
 				ShiftRight();
 				break;
+			case UP:
+				RotateBlock();
+				break;
+			case SPACE:
+				SpaceDown();
+				break;
 			}
 		}	
 
-		Sleep(1000);
+		Sleep(speed);
 	}
 }
 
