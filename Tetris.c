@@ -12,6 +12,9 @@
 #define GBOARD_ORIGIN_Y 2
 #define GBOARD_ORIGIN_X 4
 
+// 게임보드
+int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
+
 int curPosX, curPosY;	// 현재 커서 위치 저장 변수
 int block_id;			// 내려올 블록의 id
 
@@ -142,8 +145,72 @@ int BlockDown()
 	return 1;
 }
 
-// 게임보드
-int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
+// 게임보드에 블록 정보를 저장
+void AddBlockToBoard()
+{
+	// 4*4 영역을 돌면서 게임보드의 0인 부분을 1로 변경하여 블록 정보 저장
+	int x, y, arrCurX, arrCurY;
+	for (y = 0; y < 4; y++)
+	{
+		for (x = 0; x < 4; x++)
+		{
+			arrCurX = (curPosX - GBOARD_ORIGIN_X) / 2;
+			arrCurY = curPosY - GBOARD_ORIGIN_Y;
+
+			if (blockModel[block_id][y][x] == 1)
+				gameBoardInfo[arrCurY + y][arrCurX + x] = 1;
+		}
+	}
+}
+
+// 추가된 블록 정보를 포함하여 게임보드를 다시 그림
+void RedrawBlocks()
+{
+	int x, y;
+	int cursX, cursY;
+
+	for (y = 0; y < GBOARD_HEIGHT; y++)
+	{
+		for (x = 1; x < GBOARD_WIDTH + 1; x++)
+		{
+			cursX = x * 2 + GBOARD_ORIGIN_X;
+			cursY = y + GBOARD_ORIGIN_Y;
+			SetCurrentCursorPos(cursX, cursY);
+			if (gameBoardInfo[y][x] == 1)
+				printf("■");
+			else
+				printf("  ");
+		}
+	}
+}
+
+// 한 라인이 모두 블록으로 가득 찼을 경우 해당 라인 제거
+void RemoveFillUpLine()
+{
+	int y, x, line;
+	
+	// 게임보드 전체를 돔
+	for (y = GBOARD_HEIGHT - 1; y > 0; y--)
+	{
+		for (x = 1; x < GBOARD_WIDTH + 1; x++)
+		{
+			if (gameBoardInfo[y][x] != 1)
+				break;
+		}
+
+		// 전체를 돌다가 어느 한 줄이 처음부터 마지막까지 1일 경우
+		// 한 줄이 완성됐다고 판단
+ 		if (x == GBOARD_WIDTH + 1)
+		{
+			// 해당 줄을 초기화
+			for (line = 0; y - line > 0; line++)
+				memcpy(&gameBoardInfo[y - line][1], &gameBoardInfo[(y - line) - 1][1], GBOARD_WIDTH * sizeof(int));
+			// 줄을 하나씩 아래로 내림
+			y += 1;
+		}
+	}
+	RedrawBlocks();
+}
 
 // 시작 시 게임보드 초기화
 void gameBoardinit()
@@ -225,15 +292,30 @@ void ProcessKeyInput()
 // main
 int main()
 {
+	srand(time(NULL));
+
 	drawBoard();
 
 	while (1)
 		{
-			if(BlockDown()==0)	// 테트리스에서 블록은 계속 내려옴
+			// 블록 랜덤 생성
+			block_id = rand() % 28;
+			curPosX = GBOARD_ORIGIN_X + 6;
+			curPosY = GBOARD_ORIGIN_Y;
+
+			while(1)
 			{
-				break;
+				if(BlockDown()==0)	// 테트리스에서 블록은 계속 내려옴
+				{
+					// 이후 충돌 시 0을 반환
+					// 블록을 현재 위치에 저장
+					// 게임보드를 다시 그림
+					AddBlockToBoard();
+					RemoveFillUpLine();
+					break;
+				}
+				ProcessKeyInput();	// 키보드 입력을 받음
 			}
-			ProcessKeyInput();	// 키보드 입력을 받음
 		}
 		
 	return 0;
