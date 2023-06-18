@@ -128,6 +128,7 @@ void ShiftRight()
 }
 
 // 일정 시간마다 블록으로 아래쪽으로 내림
+// 계속 내려오다가 바닥에 닿으면 정지해야 하므로 반환형 변형
 int BlockDown()
 {
 	if (!DetectCollision(curPosX, curPosY + 1, blockModel[block_id]))
@@ -228,7 +229,10 @@ int main()
 
 	while (1)
 		{
-			BlockDown();		// 테트리스에서 블록은 계속 내려옴
+			if(BlockDown()==0)	// 테트리스에서 블록은 계속 내려옴
+			{
+				break;
+			}
 			ProcessKeyInput();	// 키보드 입력을 받음
 		}
 		
