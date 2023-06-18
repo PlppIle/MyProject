@@ -82,10 +82,33 @@ void deleteBlock(char blockInfo[4][4])
 	}
 }
 
+// 블록끼리의 충돌을 판별
+int DetectCollision(int _x, int _y, char blockInfo[4][4])
+{
+	int x, y;
+	int arrX = (_x-GBOARD_ORIGIN_X) / 2;
+	int arrY = _y-GBOARD_ORIGIN_Y;
+
+	for (x = 0; x < 4; x++)
+	{
+		for (y = 0; y < 4; y++)
+		{
+			if (blockInfo[y][x] == 1 && gameBoardInfo[arrY+y][arrX+x] == 1)
+				return 0;
+		}
+	}
+
+	return 1;
+}
+
 // 블록을 왼쪽으로 움직임
 // 기호는 문자 2칸 차지 +-2
 void ShiftLeft()
 {
+	// 충돌 코드 추가
+	if (!DetectCollision(curPosX-2, curPosY, blockModel[block_id]))
+		return;
+
 	deleteBlock(blockModel[block_id]);
 	curPosX -= 2;
 	SetCurrentCursorPos(curPosX, curPosY);
@@ -95,6 +118,9 @@ void ShiftLeft()
 // 블록을 오른쪽으로 움직임
 void ShiftRight()
 {
+	if (!DetectCollision(curPosX + 2, curPosY, blockModel[block_id]))
+		return;
+
 	deleteBlock(blockModel[block_id]);
 	curPosX += 2;
 	SetCurrentCursorPos(curPosX, curPosY);
@@ -104,6 +130,9 @@ void ShiftRight()
 // 일정 시간마다 블록으로 아래쪽으로 내림
 void BlockDown()
 {
+	if (!DetectCollision(curPosX, curPosY + 1, blockModel[block_id]))
+		return 0;
+	
 	deleteBlock(blockModel[block_id]);
 	curPosY += 1;
 	SetCurrentCursorPos(curPosX, curPosY);
