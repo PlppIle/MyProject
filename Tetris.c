@@ -128,7 +128,7 @@ void ShiftRight()
 }
 
 // 일정 시간마다 블록으로 아래쪽으로 내림
-void BlockDown()
+int BlockDown()
 {
 	if (!DetectCollision(curPosX, curPosY + 1, blockModel[block_id]))
 		return 0;
@@ -137,6 +137,8 @@ void BlockDown()
 	curPosY += 1;
 	SetCurrentCursorPos(curPosX, curPosY);
 	showBlock(blockModel[block_id]);
+
+	return 1;
 }
 
 // 게임보드
