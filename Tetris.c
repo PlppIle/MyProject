@@ -18,6 +18,7 @@ int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
 int curPosX, curPosY;	// 현재 커서 위치 저장 변수
 int block_id;			// 내려올 블록의 id
 int speed = 1;			// block 속도 조정
+int score = 0;			// 점수 추가
 
 /* 키보드 키값 정의 */
 #define LEFT 75
@@ -208,6 +209,7 @@ void RemoveFillUpLine()
 				memcpy(&gameBoardInfo[y - line][1], &gameBoardInfo[(y - line) - 1][1], GBOARD_WIDTH * sizeof(int));
 			// 줄을 하나씩 아래로 내림
 			y += 1;
+			score += 10;	// 줄 제거 시 점수 획득
 		}
 	}
 	RedrawBlocks();
@@ -320,12 +322,18 @@ void ProcessKeyInput()
 	}
 }
 
+// 현재 점수를 보여주는 인터페이스
+void showScore()
+{
+	SetCurrentCursorPos(30, 10);
+	printf("Score : %d", score);
+	SetCurrentCursorPos(curPosX, curPosY);
+}
+
 // main
 int main()
 {
 	srand(time(NULL));
-
-	drawBoard();
 
 	while (1)
 		{
@@ -334,8 +342,12 @@ int main()
 			curPosX = GBOARD_ORIGIN_X + 6;
 			curPosY = GBOARD_ORIGIN_Y;
 
+			drawBoard();
+
 			while(1)
 			{
+				showScore();
+
 				if(BlockDown()==0)	// 테트리스에서 블록은 계속 내려옴
 				{
 					// 이후 충돌 시 0을 반환
@@ -349,5 +361,7 @@ int main()
 			}
 		}
 		
+	
+
 	return 0;
 }
