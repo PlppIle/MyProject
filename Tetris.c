@@ -101,6 +101,15 @@ void ShiftRight()
 	showBlock(blockModel[block_id]);
 }
 
+// 일정 시간마다 블록으로 아래쪽으로 내림
+void BlockDown()
+{
+	deleteBlock(blockModel[block_id]);
+	curPosY += 1;
+	SetCurrentCursorPos(curPosX, curPosY);
+	showBlock(blockModel[block_id]);
+}
+
 // 게임보드
 int gameBoardInfo[GBOARD_HEIGHT + 1][GBOARD_WIDTH + 2];
 
@@ -186,6 +195,11 @@ int main()
 {
 	drawBoard();
 
+	while (1)
+		{
+			BlockDown();		// 테트리스에서 블록은 계속 내려옴
+			ProcessKeyInput();	// 키보드 입력을 받음
+		}
 		
 	return 0;
 }
